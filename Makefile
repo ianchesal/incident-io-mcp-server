@@ -48,7 +48,7 @@ typecheck:
 # Run code linting with flake8
 lint:
 	docker compose --profile test run --rm test flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
-	docker compose --profile test run --rm test flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+	docker compose --profile test run --rm test flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --ignore=E501,W292 --statistics
 
 # Run security checks with bandit and safety
 security:

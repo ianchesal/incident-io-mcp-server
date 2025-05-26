@@ -2,8 +2,7 @@
 
 import os
 import logging
-from typing import Any, Dict, List, Optional
-import asyncio
+from typing import Any, Dict, Optional
 
 from mcp.server.fastmcp import FastMCP
 from mcp import McpError
@@ -14,7 +13,7 @@ from dotenv import load_dotenv
 
 class IncidentIOClient:
     """Client for interacting with incident.io API"""
-    
+
     def __init__(self, api_key: str, base_url: str = "https://api.incident.io"):
         self.api_key = api_key
         self.base_url = base_url
@@ -22,11 +21,11 @@ class IncidentIOClient:
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
-    
+
     async def _make_request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Make an HTTP request to the incident.io API"""
         url = f"{self.base_url}{endpoint}"
-        
+
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.request(
@@ -55,27 +54,27 @@ async def list_incidents(
 ) -> str:
     """
     List incidents from incident.io
-    
+
     Args:
         page_size: Number of incidents to return (max 100, default 25)
         after: Pagination cursor for fetching next page
         status: Filter by incident status (e.g., 'open', 'closed')
-    
+
     Returns:
         JSON string containing the list of incidents
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
         raise McpError(ErrorData(code=-1, message="INCIDENT_IO_API_KEY environment variable not set"))
-    
+
     client = IncidentIOClient(api_key)
-    
+
     params: Dict[str, Any] = {"page_size": min(page_size, 100)}
     if after:
         params["after"] = after
     if status:
         params["status"] = status
-    
+
     try:
         result = await client._make_request("GET", "/v2/incidents", params=params)
         return str(result)
@@ -87,19 +86,19 @@ async def list_incidents(
 async def get_incident(incident_id: str) -> str:
     """
     Get details for a specific incident
-    
+
     Args:
         incident_id: The unique identifier for the incident
-    
+
     Returns:
         JSON string containing incident details
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
         raise McpError(ErrorData(code=-1, message="INCIDENT_IO_API_KEY environment variable not set"))
-    
+
     client = IncidentIOClient(api_key)
-    
+
     try:
         result = await client._make_request("GET", f"/v2/incidents/{incident_id}")
         return str(result)
@@ -117,34 +116,34 @@ async def create_incident(
 ) -> str:
     """
     Create a new incident
-    
+
     Args:
         name: The name/title of the incident
         summary: A brief summary of the incident
         severity_id: The severity level ID for the incident
         status_id: Optional status ID (defaults to organization's default)
         incident_type_id: Optional incident type ID
-    
+
     Returns:
         JSON string containing the created incident details
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
         raise McpError(ErrorData(code=-1, message="INCIDENT_IO_API_KEY environment variable not set"))
-    
+
     client = IncidentIOClient(api_key)
-    
+
     payload = {
         "name": name,
         "summary": summary,
         "severity_id": severity_id
     }
-    
+
     if status_id:
         payload["status_id"] = status_id
     if incident_type_id:
         payload["incident_type_id"] = incident_type_id
-    
+
     try:
         result = await client._make_request("POST", "/v2/incidents", json=payload)
         return str(result)
@@ -156,24 +155,24 @@ async def create_incident(
 async def list_users(page_size: int = 25, after: Optional[str] = None) -> str:
     """
     List users in the organization
-    
+
     Args:
         page_size: Number of users to return (max 100, default 25)
         after: Pagination cursor for fetching next page
-    
+
     Returns:
         JSON string containing the list of users
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
         raise McpError(ErrorData(code=-1, message="INCIDENT_IO_API_KEY environment variable not set"))
-    
+
     client = IncidentIOClient(api_key)
-    
+
     params: Dict[str, Any] = {"page_size": min(page_size, 100)}
     if after:
         params["after"] = after
-    
+
     try:
         result = await client._make_request("GET", "/v2/users", params=params)
         return str(result)
@@ -185,16 +184,16 @@ async def list_users(page_size: int = 25, after: Optional[str] = None) -> str:
 async def list_severities() -> str:
     """
     List all available incident severities
-    
+
     Returns:
         JSON string containing the list of severities
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
         raise McpError(ErrorData(code=-1, message="INCIDENT_IO_API_KEY environment variable not set"))
-    
+
     client = IncidentIOClient(api_key)
-    
+
     try:
         result = await client._make_request("GET", "/v2/severities")
         return str(result)
@@ -206,16 +205,16 @@ async def list_severities() -> str:
 async def list_incident_statuses() -> str:
     """
     List all available incident statuses
-    
+
     Returns:
         JSON string containing the list of incident statuses
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
         raise McpError(ErrorData(code=-1, message="INCIDENT_IO_API_KEY environment variable not set"))
-    
+
     client = IncidentIOClient(api_key)
-    
+
     try:
         result = await client._make_request("GET", "/v2/incident_statuses")
         return str(result)
@@ -227,11 +226,11 @@ def main():
     """Run the MCP server"""
     # Load environment variables from .env file if it exists
     load_dotenv()
-    
+
     # Configure logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
-    
+
     # Check for required environment variables
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
@@ -241,10 +240,10 @@ def main():
         logger.error("2. Create a .env file with: INCIDENT_IO_API_KEY=your_api_key")
         logger.error("3. Pass it when running: INCIDENT_IO_API_KEY=your_api_key python -m src.incident_io_mcp.server")
         raise SystemExit("Missing required INCIDENT_IO_API_KEY environment variable")
-    
+
     logger.info("incident.io MCP Server starting...")
     logger.info("API key configured (Bearer token authentication)")
-    
+
     # Run the server
     mcp.run()
 
