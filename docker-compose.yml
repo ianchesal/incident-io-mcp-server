@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mcp-server:
+    build: .
+    container_name: incident-io-mcp-dev
+    environment:
+      # Load API key from .env file or environment
+      - INCIDENT_IO_API_KEY=${INCIDENT_IO_API_KEY}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Mount source code for live development
+      - .:/app
+      # Preserve Python cache for faster rebuilds
+      - python-cache:/home/developer/.cache
+    ports:
+      - "8000:8000"
+    command: python -m src.incident_io_mcp.server
+    
+  # Development container for running tests and debugging
+  dev:
+    build: .
+    container_name: incident-io-mcp-dev-shell
+    environment:
+      - INCIDENT_IO_API_KEY=${INCIDENT_IO_API_KEY:-test-key-for-development}
+      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
+    volumes:
+      - .:/app
+      - python-cache:/home/developer/.cache
+    command: tail -f /dev/null  # Keep container running
+    profiles:
+      - dev
+
+  # Test runner container
+  test:
+    build: .
+    container_name: incident-io-mcp-test
+    environment:
+      - INCIDENT_IO_API_KEY=test-key-for-ci
+    volumes:
+      - .:/app
+      - python-cache:/home/developer/.cache
+    command: pytest -v
+    profiles:
+      - test
+
+volumes:
+  python-cache:

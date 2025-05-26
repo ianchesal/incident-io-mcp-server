@@ -5,7 +5,7 @@ import os
 from unittest.mock import AsyncMock, patch, MagicMock
 import httpx
 
-from src.incident_io_mcp.server import IncidentIOClient, list_incidents, get_incident, create_incident
+from src.incident_io_mcp.server import IncidentIOClient, list_incidents, get_incident, create_incident, main
 
 
 class TestIncidentIOClient:
@@ -198,3 +198,30 @@ class TestMCPTools:
                 mock_client._make_request.assert_called_once_with(
                     "GET", "/v2/incidents", params=expected_params
                 )
+
+
+class TestMainFunction:
+    """Test the main function and server startup"""
+    
+    def test_main_missing_api_key(self):
+        """Test that main function exits when API key is missing"""
+        with patch.dict(os.environ, {}, clear=True):
+            with patch("src.incident_io_mcp.server.load_dotenv"):
+                with pytest.raises(SystemExit):
+                    main()
+    
+    def test_main_with_api_key(self):
+        """Test that main function starts successfully with API key"""
+        with patch.dict(os.environ, {"INCIDENT_IO_API_KEY": "test-key"}):
+            with patch("src.incident_io_mcp.server.load_dotenv"):
+                with patch("src.incident_io_mcp.server.mcp.run") as mock_run:
+                    main()
+                    mock_run.assert_called_once()
+    
+    def test_main_loads_dotenv(self):
+        """Test that main function loads environment variables from .env"""
+        with patch.dict(os.environ, {"INCIDENT_IO_API_KEY": "test-key"}):
+            with patch("src.incident_io_mcp.server.load_dotenv") as mock_load_dotenv:
+                with patch("src.incident_io_mcp.server.mcp.run"):
+                    main()
+                    mock_load_dotenv.assert_called_once()

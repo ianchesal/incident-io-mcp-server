@@ -8,6 +8,7 @@ import asyncio
 from mcp.server.fastmcp import FastMCP
 from mcp.server.models import ServerError
 import httpx
+from dotenv import load_dotenv
 
 
 class IncidentIOClient:
@@ -223,13 +224,25 @@ async def list_incident_statuses() -> str:
 
 def main():
     """Run the MCP server"""
+    # Load environment variables from .env file if it exists
+    load_dotenv()
+    
     # Configure logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     
     # Check for required environment variables
-    if not os.getenv("INCIDENT_IO_API_KEY"):
-        logger.warning("INCIDENT_IO_API_KEY environment variable not set. Server will fail on API calls.")
+    api_key = os.getenv("INCIDENT_IO_API_KEY")
+    if not api_key:
+        logger.error("INCIDENT_IO_API_KEY environment variable not set.")
+        logger.error("Please set your incident.io API key using one of these methods:")
+        logger.error("1. Environment variable: export INCIDENT_IO_API_KEY='your_api_key'")
+        logger.error("2. Create a .env file with: INCIDENT_IO_API_KEY=your_api_key")
+        logger.error("3. Pass it when running: INCIDENT_IO_API_KEY=your_api_key python -m src.incident_io_mcp.server")
+        raise SystemExit("Missing required INCIDENT_IO_API_KEY environment variable")
+    
+    logger.info("incident.io MCP Server starting...")
+    logger.info("API key configured (Bearer token authentication)")
     
     # Run the server
     mcp.run()

@@ -8,11 +8,17 @@ This is an MCP (Model Context Protocol) server implementation for incident.io in
 
 ## Development Environment
 
-This is a Python project using pyenv for virtual environment management. The development setup uses:
-- Python 3.11.4
-- pyenv virtual environment named "incident-io-mcp-server"
-- Dependencies installation is still to be configured (TODO in README)
+This is a Python project using Docker for development and deployment. The development setup uses:
+- Docker and Docker Compose for containerized development
+- Python 3.11 base image
+- Multi-service setup with development, testing, and server containers
+- Volume mounts for live code editing and debugging
 
 ## Project Status
 
-The repository is newly initialized with only basic structure files (README, LICENSE, .gitignore). The actual MCP server implementation is yet to be developed.
+The repository contains a fully functional MCP server implementation with:
+- Complete incident.io API integration with Bearer token authentication
+- 6 MCP tools for incident management (list, get, create incidents, list users/severities/statuses)
+- Comprehensive test suite with async support
+- Docker-based development environment with docker-compose
+- GitHub Actions CI/CD pipeline with testing, linting, and security checks
