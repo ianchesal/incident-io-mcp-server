@@ -21,6 +21,7 @@ The server supports multiple secure methods for providing your API key and autom
 ### Prerequisites
 
 - Docker and Docker Compose
+- Make (usually pre-installed on macOS/Linux)
 - incident.io API key
 
 ### Development Environment Setup
@@ -33,7 +34,7 @@ The server supports multiple secure methods for providing your API key and autom
 
 2. **Build the development container:**
    ```bash
-   docker-compose build
+   make build
    ```
 
 3. **Configure your incident.io API key securely:**
@@ -69,30 +70,33 @@ The server supports multiple secure methods for providing your API key and autom
 
 ### Running the MCP Server
 
-**Option 1: Run with docker-compose (recommended):**
+**Option 1: Run the MCP server (recommended):**
 ```bash
-docker-compose up mcp-server
+make up
 ```
 
 **Option 2: Run in detached mode:**
 ```bash
-docker-compose up -d mcp-server
+make up-d
 ```
 
 **Option 3: Run with custom environment:**
 ```bash
-INCIDENT_IO_API_KEY=your_api_key docker-compose up mcp-server
+INCIDENT_IO_API_KEY=your_api_key make up
 ```
 
 The server will start and listen for MCP connections. You can then connect it to Claude Desktop or other MCP-compatible clients.
 
 ### Development Workflow
 
-**Start a development shell:**
+**Start development environment:**
 ```bash
-# Start development container with shell access
-docker-compose --profile dev up -d dev
-docker-compose exec dev bash
+make dev
+```
+
+**Open development shell:**
+```bash
+make shell
 ```
 
 **Run commands inside the container:**
@@ -105,47 +109,66 @@ python -c "import src.incident_io_mcp.server; print('Import successful')"  # Tes
 
 **Stop development containers:**
 ```bash
-docker-compose --profile dev down
+make down-dev
 ```
 
 ### Running Tests
 
-**Run all tests (using docker-compose profile):**
+**Run all tests:**
 ```bash
-docker-compose --profile test run --rm test
+make test
 ```
 
 **Run tests with coverage:**
 ```bash
-docker-compose --profile test run --rm test pytest --cov=src/incident_io_mcp --cov-report=term-missing
+make test-cov
 ```
 
 **Run specific test file:**
 ```bash
-docker-compose --profile test run --rm test pytest tests/test_server.py -v
+make test-file FILE=test_server.py
 ```
 
 **Run tests interactively in development container:**
 ```bash
-docker-compose --profile dev up -d dev
-docker-compose exec dev pytest -v
+make dev
+make shell
+# Inside container:
+pytest -v
 ```
 
 ### Debugging
 
 **Access logs:**
 ```bash
-docker-compose logs mcp-server
-docker-compose logs -f mcp-server  # Follow logs
+make logs      # Show logs
+make logs-f    # Follow logs
 ```
 
 **Interactive debugging:**
 ```bash
-# Start development container with shell
-docker-compose --profile dev up -d dev
-docker-compose exec dev bash
+# Start development environment and open shell
+make dev
+make shell
 
 # Inside container - run with debugger
 python -m pdb -m src.incident_io_mcp.server
 ```
+
+### Available Make Commands
+
+Run `make help` to see all available commands:
+
+```bash
+make help
+```
+
+Common commands:
+- `make build` - Build all containers
+- `make dev` - Start development environment
+- `make test` - Run all tests
+- `make shell` - Open development shell
+- `make up` - Start MCP server
+- `make logs` - View server logs
+- `make clean` - Stop and remove all containers
 

@@ -27,3 +27,4 @@ The repository contains a fully functional MCP server implementation with:
 
 - Use conventional commit syntax for git commits
 - Create a git commit after you execute each TODO item so there is a git commit history to undo from
+- Use `docker compose` instead of `docker-compose` when executing local development environment commands
