@@ -27,7 +27,7 @@ The server supports multiple secure methods for providing your API key and autom
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:ianchesal/incident-io-mcp-server.git
    cd incident-io-mcp-server
    ```
 
