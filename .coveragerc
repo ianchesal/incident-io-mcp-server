@@ -1,0 +1,17 @@
+[run]
+source = src/incident_io_mcp
+data_file = /tmp/.coverage
+parallel = false
+concurrency = thread
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    @abstractmethod
+
+[xml]
+output = /tmp/coverage.xml
