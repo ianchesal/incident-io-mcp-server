@@ -1,4 +1,4 @@
-.PHONY: help build up dev test shell logs clean typecheck security
+.PHONY: help build up dev test shell logs clean typecheck lint security
 
 # Default target
 help:
@@ -9,6 +9,7 @@ help:
 	@echo "  test       - Run all tests"
 	@echo "  test-cov   - Run tests with coverage report"
 	@echo "  typecheck  - Run type checking with mypy"
+	@echo "  lint       - Run code linting with flake8"
 	@echo "  security   - Run security checks with bandit and safety"
 	@echo "  shell      - Open shell in development container"
 	@echo "  logs       - Show MCP server logs"
@@ -38,11 +39,16 @@ test:
 
 # Run tests with coverage
 test-cov:
-	docker compose --profile test run --rm test pytest --cov=src/incident_io_mcp --cov-report=term-missing
+	docker compose --profile test run --rm test pytest --cov=src/incident_io_mcp --cov-report=xml --cov-report=term-missing
 
 # Run type checking with mypy
 typecheck:
 	docker compose --profile test run --rm test mypy src/incident_io_mcp/ --ignore-missing-imports
+
+# Run code linting with flake8
+lint:
+	docker compose --profile test run --rm test flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+	docker compose --profile test run --rm test flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
 # Run security checks with bandit and safety
 security:
