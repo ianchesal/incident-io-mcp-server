@@ -1,4 +1,4 @@
-.PHONY: help build up dev test shell logs clean
+.PHONY: help build up dev test shell logs clean typecheck security
 
 # Default target
 help:
@@ -8,6 +8,8 @@ help:
 	@echo "  dev        - Start development environment"
 	@echo "  test       - Run all tests"
 	@echo "  test-cov   - Run tests with coverage report"
+	@echo "  typecheck  - Run type checking with mypy"
+	@echo "  security   - Run security checks with bandit and safety"
 	@echo "  shell      - Open shell in development container"
 	@echo "  logs       - Show MCP server logs"
 	@echo "  logs-f     - Follow MCP server logs"
@@ -37,6 +39,15 @@ test:
 # Run tests with coverage
 test-cov:
 	docker compose --profile test run --rm test pytest --cov=src/incident_io_mcp --cov-report=term-missing
+
+# Run type checking with mypy
+typecheck:
+	docker compose --profile test run --rm test mypy src/incident_io_mcp/ --ignore-missing-imports
+
+# Run security checks with bandit and safety
+security:
+	@echo "Running security checks with bandit and safety..."
+	docker compose --profile test run --rm test bash -c "pip install bandit safety && /home/developer/.local/bin/bandit -r src/ && /home/developer/.local/bin/safety check"
 
 # Run specific test file (usage: make test-file FILE=test_server.py)
 test-file:
