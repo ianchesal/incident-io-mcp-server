@@ -48,11 +48,6 @@ jobs:
         env:
           INCIDENT_IO_API_KEY: test-key-for-ci
 
-      - name: Extract coverage report from container
-        run: |
-          # Create a temporary container to extract coverage.xml
-          docker compose --profile test run --rm -v $(pwd):/output test cp coverage.xml /output/ || true
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:

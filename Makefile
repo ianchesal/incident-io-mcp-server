@@ -40,7 +40,7 @@ test:
 
 # Run tests with coverage
 test-cov:
-	docker compose --profile test run --rm test bash -c "pip install --no-warn-script-location pytest-cov && pytest --cov=src/incident_io_mcp --cov-report=xml --cov-report=term-missing"
+	docker compose --profile test run --rm test bash -c "pip install --no-warn-script-location pytest-cov && COVERAGE_FILE=/app/.coverage pytest --cov=src/incident_io_mcp --cov-report=xml:/app/coverage.xml --cov-report=term-missing"
 
 # Run type checking with mypy
 typecheck:
