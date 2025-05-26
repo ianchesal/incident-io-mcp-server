@@ -1,4 +1,4 @@
-.PHONY: help build up dev test shell logs clean typecheck lint security
+.PHONY: help build up dev test shell logs clean clean-deep typecheck lint security
 
 # Default target
 help:
@@ -15,6 +15,7 @@ help:
 	@echo "  logs       - Show MCP server logs"
 	@echo "  logs-f     - Follow MCP server logs"
 	@echo "  clean      - Stop and remove all containers"
+	@echo "  clean-deep - Deep clean: remove all containers, images, volumes, and build cache"
 	@echo "  down       - Stop all services"
 
 # Build containers
@@ -74,6 +75,25 @@ logs-f:
 # Stop and remove containers
 clean:
 	docker compose down --volumes --remove-orphans
+
+# Deep clean: remove all project Docker artifacts
+clean-deep:
+	@echo "🧹 Deep cleaning all Docker artifacts for this project..."
+	@echo "⏹️  Stopping all running containers..."
+	-docker compose --profile dev --profile test down --remove-orphans
+	-docker stop incident-io-mcp-dev incident-io-mcp-dev-shell incident-io-mcp-test 2>/dev/null || true
+	@echo "🗑️  Removing all project containers..."
+	-docker rm -f incident-io-mcp-dev incident-io-mcp-dev-shell incident-io-mcp-test 2>/dev/null || true
+	@echo "🏗️  Removing all project images..."
+	-docker rmi -f incident-io-mcp-server-mcp-server incident-io-mcp-server-dev incident-io-mcp-server-test 2>/dev/null || true
+	-docker rmi -f $$(docker images --filter "reference=incident-io-mcp-server*" -q) 2>/dev/null || true
+	@echo "💾 Removing all project volumes..."
+	-docker volume rm incident-io-mcp-server_python-cache 2>/dev/null || true
+	@echo "🔧 Removing Docker Compose networks..."
+	-docker network rm incident-io-mcp-server_default 2>/dev/null || true
+	@echo "🧽 Cleaning up build cache..."
+	-docker builder prune -f --filter "label=stage=*"
+	@echo "✨ Deep clean complete! All Docker artifacts for this project have been removed."
 
 # Stop all services
 down:
