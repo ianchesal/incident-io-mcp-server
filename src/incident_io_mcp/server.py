@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 import asyncio
 
 from mcp.server.fastmcp import FastMCP
-from mcp.server.models import ServerError
+from mcp.server.exceptions import McpError
 import httpx
 from dotenv import load_dotenv
 
@@ -37,9 +37,9 @@ class IncidentIOClient:
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
-                raise ServerError(f"API request failed: {e.response.status_code} - {e.response.text}")
+                raise McpError(f"API request failed: {e.response.status_code} - {e.response.text}")
             except Exception as e:
-                raise ServerError(f"Request failed: {str(e)}")
+                raise McpError(f"Request failed: {str(e)}")
 
 
 # Initialize the MCP server
@@ -65,11 +65,11 @@ async def list_incidents(
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
-        raise ServerError("INCIDENT_IO_API_KEY environment variable not set")
+        raise McpError("INCIDENT_IO_API_KEY environment variable not set")
     
     client = IncidentIOClient(api_key)
     
-    params = {"page_size": min(page_size, 100)}
+    params: Dict[str, Any] = {"page_size": min(page_size, 100)}
     if after:
         params["after"] = after
     if status:
@@ -79,7 +79,7 @@ async def list_incidents(
         result = await client._make_request("GET", "/v2/incidents", params=params)
         return str(result)
     except Exception as e:
-        raise ServerError(f"Failed to list incidents: {str(e)}")
+        raise McpError(f"Failed to list incidents: {str(e)}")
 
 
 @mcp.tool()
@@ -95,7 +95,7 @@ async def get_incident(incident_id: str) -> str:
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
-        raise ServerError("INCIDENT_IO_API_KEY environment variable not set")
+        raise McpError("INCIDENT_IO_API_KEY environment variable not set")
     
     client = IncidentIOClient(api_key)
     
@@ -103,7 +103,7 @@ async def get_incident(incident_id: str) -> str:
         result = await client._make_request("GET", f"/v2/incidents/{incident_id}")
         return str(result)
     except Exception as e:
-        raise ServerError(f"Failed to get incident {incident_id}: {str(e)}")
+        raise McpError(f"Failed to get incident {incident_id}: {str(e)}")
 
 
 @mcp.tool()
@@ -129,7 +129,7 @@ async def create_incident(
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
-        raise ServerError("INCIDENT_IO_API_KEY environment variable not set")
+        raise McpError("INCIDENT_IO_API_KEY environment variable not set")
     
     client = IncidentIOClient(api_key)
     
@@ -148,7 +148,7 @@ async def create_incident(
         result = await client._make_request("POST", "/v2/incidents", json=payload)
         return str(result)
     except Exception as e:
-        raise ServerError(f"Failed to create incident: {str(e)}")
+        raise McpError(f"Failed to create incident: {str(e)}")
 
 
 @mcp.tool()
@@ -165,11 +165,11 @@ async def list_users(page_size: int = 25, after: Optional[str] = None) -> str:
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
-        raise ServerError("INCIDENT_IO_API_KEY environment variable not set")
+        raise McpError("INCIDENT_IO_API_KEY environment variable not set")
     
     client = IncidentIOClient(api_key)
     
-    params = {"page_size": min(page_size, 100)}
+    params: Dict[str, Any] = {"page_size": min(page_size, 100)}
     if after:
         params["after"] = after
     
@@ -177,7 +177,7 @@ async def list_users(page_size: int = 25, after: Optional[str] = None) -> str:
         result = await client._make_request("GET", "/v2/users", params=params)
         return str(result)
     except Exception as e:
-        raise ServerError(f"Failed to list users: {str(e)}")
+        raise McpError(f"Failed to list users: {str(e)}")
 
 
 @mcp.tool()
@@ -190,7 +190,7 @@ async def list_severities() -> str:
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
-        raise ServerError("INCIDENT_IO_API_KEY environment variable not set")
+        raise McpError("INCIDENT_IO_API_KEY environment variable not set")
     
     client = IncidentIOClient(api_key)
     
@@ -198,7 +198,7 @@ async def list_severities() -> str:
         result = await client._make_request("GET", "/v2/severities")
         return str(result)
     except Exception as e:
-        raise ServerError(f"Failed to list severities: {str(e)}")
+        raise McpError(f"Failed to list severities: {str(e)}")
 
 
 @mcp.tool()
@@ -211,7 +211,7 @@ async def list_incident_statuses() -> str:
     """
     api_key = os.getenv("INCIDENT_IO_API_KEY")
     if not api_key:
-        raise ServerError("INCIDENT_IO_API_KEY environment variable not set")
+        raise McpError("INCIDENT_IO_API_KEY environment variable not set")
     
     client = IncidentIOClient(api_key)
     
@@ -219,7 +219,7 @@ async def list_incident_statuses() -> str:
         result = await client._make_request("GET", "/v2/incident_statuses")
         return str(result)
     except Exception as e:
-        raise ServerError(f"Failed to list incident statuses: {str(e)}")
+        raise McpError(f"Failed to list incident statuses: {str(e)}")
 
 
 def main():
