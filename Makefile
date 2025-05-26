@@ -39,7 +39,7 @@ test:
 
 # Run tests with coverage
 test-cov:
-	docker compose --profile test run --rm test bash -c "pip install pytest-cov && pytest --cov=src/incident_io_mcp --cov-report=xml --cov-report=term-missing"
+	docker compose --profile test run --rm test bash -c "pip install --no-warn-script-location pytest-cov && pytest --cov=src/incident_io_mcp --cov-report=xml --cov-report=term-missing"
 
 # Run type checking with mypy
 typecheck:
@@ -53,7 +53,7 @@ lint:
 # Run security checks with bandit and safety
 security:
 	@echo "Running security checks with bandit and safety..."
-	docker compose --profile test run --rm test bash -c "pip install bandit safety && /home/developer/.local/bin/bandit -r src/ && /home/developer/.local/bin/safety check"
+	docker compose --profile test run --rm test bash -c "pip install --no-warn-script-location bandit safety && /home/developer/.local/bin/bandit -r src/ && /home/developer/.local/bin/safety check"
 
 # Run specific test file (usage: make test-file FILE=test_server.py)
 test-file:
