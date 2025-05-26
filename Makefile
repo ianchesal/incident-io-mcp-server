@@ -53,7 +53,7 @@ lint:
 # Run security checks with bandit and safety
 security:
 	@echo "Running security checks with bandit and safety..."
-	docker compose --profile test run --rm test bash -c "pip install --no-warn-script-location bandit safety && /home/developer/.local/bin/bandit -r src/ && /home/developer/.local/bin/safety check"
+	docker compose --profile test run --rm test bash -c "pip install --no-warn-script-location 'setuptools>=70.0.0' bandit safety && /home/developer/.local/bin/bandit -r src/ && /home/developer/.local/bin/safety check"
 
 # Run specific test file (usage: make test-file FILE=test_server.py)
 test-file:
