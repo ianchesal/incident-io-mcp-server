@@ -22,3 +22,8 @@ The repository contains a fully functional MCP server implementation with:
 - Comprehensive test suite with async support
 - Docker-based development environment with docker-compose
 - GitHub Actions CI/CD pipeline with testing, linting, and security checks
+
+## Development Guidelines
+
+- Use conventional commit syntax for git commits
+- Create a git commit after you execute each TODO item so there is a git commit history to undo from
