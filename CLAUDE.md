@@ -4,27 +4,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an MCP (Model Context Protocol) server implementation for incident.io integration. The project is currently in its initial setup phase.
+This is a fully functional MCP (Model Context Protocol) server implementation for incident.io integration. The server provides 6 tools for incident management and organizational data access through Bearer token authentication.
 
 ## Development Environment
 
-This is a Python project using Docker for development and deployment. The development setup uses:
-- Docker and Docker Compose for containerized development
-- Python 3.11 base image
-- Multi-service setup with development, testing, and server containers
-- Volume mounts for live code editing and debugging
+This is a Python project with flexible container runtime support. The development setup features:
+- **Container Runtime**: Automatic detection and support for both Docker and Podman (Podman preferred)
+- **Compose**: Compatible with both `docker compose` and `podman compose`
+- **Python Version**: Python 3.11 base image
+- **Multi-service Setup**: Development, testing, and server containers with dedicated profiles
+- **Volume Mounts**: Live code editing and debugging support
+- **Environment**: Secure API key management via environment variables and .env files
 
 ## Project Status
 
 The repository contains a fully functional MCP server implementation with:
-- Complete incident.io API integration with Bearer token authentication
-- 6 MCP tools for incident management (list, get, create incidents, list users/severities/statuses)
-- Comprehensive test suite with async support
-- Docker-based development environment with docker-compose
-- GitHub Actions CI/CD pipeline with testing, linting, and security checks
+- **API Integration**: Complete incident.io API integration with Bearer token authentication
+- **MCP Tools**: 6 tools for incident management (list, get, create incidents, list users/severities/statuses)
+- **Testing**: Comprehensive test suite with async support and coverage reporting
+- **Container Support**: Flexible Docker/Podman development environment with runtime auto-detection
+- **Quality Assurance**: Type checking (mypy), linting (flake8), and security checks (bandit/safety)
+- **CI/CD**: GitHub Actions pipeline with testing, linting, and security checks
+- **Documentation**: Complete README with security best practices and development workflows
 
 ## Development Guidelines
 
-- Use conventional commit syntax for git commits
-- Create a git commit after you execute each TODO item so there is a git commit history to undo from
-- Use `docker compose` instead of `docker-compose` when executing local development environment commands
+- **Commits**: Use conventional commit syntax for git commits
+- **TODO Tracking**: Create a git commit after executing each TODO item for proper history
+- **Container Commands**: Use `make` targets instead of direct container commands for consistency
+- **Runtime Detection**: The Makefile automatically detects and uses the appropriate container runtime (docker/podman)
+- **Testing**: Run quality checks with `make test`, `make typecheck`, `make lint`, and `make security`
+- **Environment**: Use `make runtime-info` to verify detected container runtime
+
+## Available Make Targets
+
+Key development commands:
+- `make runtime-info` - Show detected container runtime
+- `make build` - Build all containers  
+- `make dev` - Start development environment
+- `make test` - Run all tests
+- `make test-cov` - Run tests with coverage
+- `make typecheck` - Run mypy type checking
+- `make lint` - Run flake8 linting
+- `make security` - Run bandit and safety checks
+- `make shell` - Open development shell
+- `make clean-deep` - Remove all project container artifacts

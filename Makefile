@@ -9,26 +9,41 @@ else
     $(error Neither podman nor docker found. Please install one of them.)
 endif
 
-.PHONY: help build up dev test shell logs clean clean-deep typecheck lint security runtime-info
+.PHONY: help build up up-d dev test test-cov test-file shell logs logs-f clean clean-deep typecheck lint security runtime-info down down-dev
 
 # Default target
 help:
 	@echo "Available commands:"
-	@echo "  runtime-info - Show detected container runtime"
-	@echo "  build      - Build all containers"
-	@echo "  up         - Start the MCP server"
-	@echo "  dev        - Start development environment"
-	@echo "  test       - Run all tests"
-	@echo "  test-cov   - Run tests with coverage report"
-	@echo "  typecheck  - Run type checking with mypy"
-	@echo "  lint       - Run code linting with flake8"
-	@echo "  security   - Run security checks with bandit and safety"
-	@echo "  shell      - Open shell in development container"
-	@echo "  logs       - Show MCP server logs"
-	@echo "  logs-f     - Follow MCP server logs"
-	@echo "  clean      - Stop and remove all containers"
-	@echo "  clean-deep - Deep clean: remove all containers, images, volumes, and build cache"
-	@echo "  down       - Stop all services"
+	@echo ""
+	@echo "🏗️  Build & Runtime:"
+	@echo "  runtime-info - Show detected container runtime (docker/podman)"
+	@echo "  build        - Build all containers"
+	@echo ""
+	@echo "🚀 Server Operations:"
+	@echo "  up           - Start the MCP server (foreground)"
+	@echo "  up-d         - Start the MCP server (detached/background)"
+	@echo "  down         - Stop all services"
+	@echo ""
+	@echo "🛠️  Development:"
+	@echo "  dev          - Start development environment"
+	@echo "  down-dev     - Stop development environment"
+	@echo "  shell        - Open shell in development container"
+	@echo ""
+	@echo "🧪 Testing & Quality:"
+	@echo "  test         - Run all tests"
+	@echo "  test-cov     - Run tests with coverage report"
+	@echo "  test-file    - Run specific test file (usage: make test-file FILE=test_server.py)"
+	@echo "  typecheck    - Run type checking with mypy"
+	@echo "  lint         - Run code linting with flake8"
+	@echo "  security     - Run security checks with bandit and safety"
+	@echo ""
+	@echo "📋 Monitoring:"
+	@echo "  logs         - Show MCP server logs"
+	@echo "  logs-f       - Follow MCP server logs (real-time)"
+	@echo ""
+	@echo "🧹 Cleanup:"
+	@echo "  clean        - Stop and remove all containers"
+	@echo "  clean-deep   - Deep clean: remove all containers, images, volumes, and build cache"
 
 # Show detected container runtime
 runtime-info:
