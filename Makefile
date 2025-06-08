@@ -1,12 +1,21 @@
-# Container runtime detection - prefer podman over docker
-ifneq ($(shell which podman 2>/dev/null),)
-    CONTAINER_RUNTIME := podman
+# Container runtime detection - respect environment variable, otherwise prefer podman over docker
+ifndef CONTAINER_RUNTIME
+    ifneq ($(shell which podman 2>/dev/null),)
+        CONTAINER_RUNTIME := podman
+    else ifneq ($(shell which docker 2>/dev/null),)
+        CONTAINER_RUNTIME := docker
+    else
+        $(error Neither podman nor docker found. Please install one of them.)
+    endif
+endif
+
+# Set compose command based on runtime
+ifeq ($(CONTAINER_RUNTIME), podman)
     COMPOSE_CMD := podman compose
-else ifneq ($(shell which docker 2>/dev/null),)
-    CONTAINER_RUNTIME := docker
+else ifeq ($(CONTAINER_RUNTIME), docker)
     COMPOSE_CMD := docker compose
 else
-    $(error Neither podman nor docker found. Please install one of them.)
+    $(error Invalid CONTAINER_RUNTIME value: $(CONTAINER_RUNTIME). Must be 'docker' or 'podman'.)
 endif
 
 .PHONY: help build up up-d dev test test-cov test-file shell logs logs-f clean clean-deep typecheck lint security runtime-info down down-dev
