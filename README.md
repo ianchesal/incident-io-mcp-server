@@ -2,6 +2,26 @@
 
 An MCP (Model Context Protocol) server for integrating with incident.io API. This server provides tools for incident management, user lookup, and workflow automation through Claude and other MCP-compatible AI assistants.
 
+## ⚠️ Security Warning
+
+**🚨 DO NOT RUN THIS SERVER ON THE OPEN INTERNET 🚨**
+
+This MCP server provides **NO AUTHENTICATION** on its tool APIs. Anyone who can reach the server can:
+- List all incidents in your organization
+- View sensitive incident details
+- Create new incidents
+- Access user information
+- View organizational data (severities, statuses)
+
+**Safe Usage:**
+- ✅ Run only on localhost/127.0.0.1
+- ✅ Use in local development environments
+- ✅ Deploy behind proper authentication/VPN
+- ❌ Never expose directly to the internet
+- ❌ Never run on public cloud instances without proper network security
+
+**This server is designed for local development and secure, authenticated environments only.**
+
 ## Features
 
 - **Incident Management**: List, view, and create incidents
@@ -9,6 +29,7 @@ An MCP (Model Context Protocol) server for integrating with incident.io API. Thi
 - **Metadata Access**: Get incident severities and statuses
 - **Secure Authentication**: Bearer token authentication with incident.io API
 - **Comprehensive Testing**: Full test suite with async support
+- **Container Runtime Flexibility**: Automatic detection and support for both Docker and Podman
 
 ## Authentication
 
@@ -20,9 +41,10 @@ The server supports multiple secure methods for providing your API key and autom
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Make (usually pre-installed on macOS/Linux)
-- incident.io API key
+- **Container Runtime**: Docker or Podman (automatically detected)
+- **Compose**: docker compose or podman compose
+- **Make**: Usually pre-installed on macOS/Linux
+- **API Key**: incident.io API key
 
 ### Development Environment Setup
 
@@ -32,10 +54,13 @@ The server supports multiple secure methods for providing your API key and autom
    cd incident-io-mcp-server
    ```
 
-2. **Build the development container:**
+2. **Check container runtime and build:**
    ```bash
-   make build
+   make runtime-info  # See which runtime is detected (docker/podman)
+   make build         # Build all containers
    ```
+
+   > **Note**: The Makefile automatically detects whether you have Docker or Podman installed and uses the appropriate commands. Podman is preferred over Docker if both are available.
 
 3. **Configure your incident.io API key securely:**
 
@@ -163,12 +188,27 @@ Run `make help` to see all available commands:
 make help
 ```
 
-Common commands:
+**Core commands:**
+- `make runtime-info` - Show detected container runtime (docker/podman)
 - `make build` - Build all containers
-- `make dev` - Start development environment
-- `make test` - Run all tests
-- `make shell` - Open development shell
 - `make up` - Start MCP server
+- `make up-d` - Start MCP server in detached mode
+- `make dev` - Start development environment
+- `make shell` - Open development shell
+
+**Testing and Quality:**
+- `make test` - Run all tests
+- `make test-cov` - Run tests with coverage report
+- `make test-file FILE=test_server.py` - Run specific test file
+- `make typecheck` - Run type checking with mypy
+- `make lint` - Run code linting with flake8
+- `make security` - Run security checks with bandit and safety
+
+**Utility:**
 - `make logs` - View server logs
+- `make logs-f` - Follow server logs
+- `make down` - Stop all services
+- `make down-dev` - Stop development profile
 - `make clean` - Stop and remove all containers
+- `make clean-deep` - Deep clean: remove all containers, images, volumes, and build cache
 

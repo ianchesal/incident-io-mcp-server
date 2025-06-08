@@ -33,6 +33,8 @@ jobs:
           COMPOSE_BAKE=true make build
           COMPOSE_BAKE=true docker compose --profile test build
           COMPOSE_BAKE=true docker compose --profile dev build
+        env:
+          CONTAINER_RUNTIME: docker
 
       - name: Save Docker images
         run: |
@@ -77,15 +79,20 @@ jobs:
       - name: Run linting with flake8
         run: |
           make lint
+        env:
+          CONTAINER_RUNTIME: docker
 
       - name: Run type checking with mypy
         run: |
           make typecheck
+        env:
+          CONTAINER_RUNTIME: docker
 
       - name: Run tests with pytest
         run: |
           make test
         env:
+          CONTAINER_RUNTIME: docker
           INCIDENT_IO_API_KEY: test-key-for-ci
 
   security:
@@ -117,4 +124,6 @@ jobs:
       - name: Run security checks
         run: |
           make security
+        env:
+          CONTAINER_RUNTIME: docker
 
